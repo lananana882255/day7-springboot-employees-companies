@@ -130,4 +130,16 @@ public class CompanyControllerTest {
                 .andExpect(jsonPath("$.name").value("Spring1"));
     }
 
+    @Test
+    public void should_return_status204_when_delete_given_an_company_id() throws Exception {
+        String companyJson = """
+                {
+                    "name": "Spring"
+                }
+                """;
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJson));
+        mockMvc.perform(delete("/companies/1")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/companies/1")).andExpect(status().isNotFound());
+    }
+
 }

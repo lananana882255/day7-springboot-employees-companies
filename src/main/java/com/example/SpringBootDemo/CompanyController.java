@@ -53,4 +53,15 @@ public class CompanyController {
         }
         return ResponseEntity.ok(updateCompany);
     }
+
+    @DeleteMapping("/companies/{id}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable long id){
+        boolean removed=companyList.removeIf(company -> company.getId()==id);
+        if(removed){
+            return ResponseEntity.noContent().build();
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
