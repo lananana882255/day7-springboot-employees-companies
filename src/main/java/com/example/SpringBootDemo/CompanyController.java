@@ -40,6 +40,17 @@ public class CompanyController {
         }
         int end = Math.min(start + size, getCompaniesList.size());
         return getCompaniesList.subList(start,end);
+    }
 
+    @PutMapping("/companies/{id}/name")
+    public ResponseEntity<Company> updateCompanyName(@PathVariable  long id,@RequestBody Map<String,Object> updateName){
+        Company updateCompany=companyList.stream().filter(company -> company.getId()==id).findFirst().orElse(null);
+        if(updateCompany==null){
+            return ResponseEntity.notFound().build();
+        }
+        if(updateName.containsKey("name")){
+            updateCompany.setName(updateName.get("name").toString());
+        }
+        return ResponseEntity.ok(updateCompany);
     }
 }

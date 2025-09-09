@@ -110,4 +110,24 @@ public class CompanyControllerTest {
                 .andExpect(jsonPath("$[3].name").value("Spring4"))
                 .andExpect(jsonPath("$[4].name").value("Spring5"));
     }
+
+    @Test
+    public void should_return_company_when_put_given_an_company_name() throws Exception {
+        String companyJson = """
+                {
+                    "name": "Spring"
+                }
+                """;
+       mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJson));
+
+        String updateJson = """
+                {
+                    "name": "Spring1"
+                }
+                """;
+        mockMvc.perform(put("/companies/1/name").contentType(APPLICATION_JSON).content(updateJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Spring1"));
+    }
+
 }
