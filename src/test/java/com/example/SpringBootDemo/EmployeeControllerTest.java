@@ -154,6 +154,71 @@ public class EmployeeControllerTest {
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
         mockMvc.perform(delete("/employees/1")).andExpect(status().isNoContent());
         mockMvc.perform(delete("/employees/1")).andExpect(status().isNotFound());
+    }
 
+    @Test
+    public void should_return_employees_when_get_given_page_and_size() throws Exception {
+        String employeeJsonA = """
+                {
+                    "name": "Tom1",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        String employeeJsonB = """
+                {
+                    "name": "Tom2",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        String employeeJsonC = """
+                {
+                    "name": "Tom3",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        String employeeJsonD = """
+                {
+                    "name": "Tom4",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        String employeeJsonE = """
+                {
+                    "name": "Tom5",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        String employeeJsonF = """
+                {
+                    "name": "Tom6",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonA));
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonB));
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonC));
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonD));
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonE));
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonF));
+        mockMvc.perform(get("/employees?page=1&size=5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(5))
+                .andExpect(jsonPath("$[0].name").value("Tom1"))
+                .andExpect(jsonPath("$[1].name").value("Tom2"))
+                .andExpect(jsonPath("$[2].name").value("Tom3"))
+                .andExpect(jsonPath("$[3].name").value("Tom4"))
+                .andExpect(jsonPath("$[4].name").value("Tom5"));
     }
 }

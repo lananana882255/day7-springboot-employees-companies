@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,11 +30,21 @@ public class EmployeesController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> getEmployeeByGender(@RequestParam(required = false) String gender){
+    public List<Employee> getEmployeeByGender(@RequestParam(required = false) String gender
+            ,@RequestParam(required = false) int page
+            ,@RequestParam(required = false) int size){
+
+        List<Employee> filteredEmployeesList= employeeList;
         if(gender!=null){
-            return employeeList.stream().filter(employee -> employee.getGender().equalsIgnoreCase(gender)).collect(Collectors.toList());
+            filteredEmployeesList=employeeList.stream().filter(employee -> employee.getGender().equalsIgnoreCase(gender)).collect(Collectors.toList());
         }
-        return new ArrayList<>(employeeList);
+        int start = (page - 1) * size;
+        if (start >= filteredEmployeesList.size()) {
+            return Collections.emptyList();
+        }
+        int end = Math.min(start + size, filteredEmployeesList.size());
+        return filteredEmployeesList.subList(start,end);
+
     }
 
     @PutMapping("/employees/{id}/age-salary")
