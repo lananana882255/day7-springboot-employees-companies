@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class EmployeesController {
@@ -23,11 +24,20 @@ public class EmployeesController {
         return employeeList.stream().filter(employee -> employee.getId()==id).findFirst().orElse(null);
     }
 
-    @GetMapping("employees")
-    public List<Employee> getEmployeeByGender(@RequestParam String gender){
-        return employeeList.stream().filter(employee -> employee.getGender()==gender).toList();
+    @GetMapping("/employees")
+    public List<Employee> getEmployeeByGender(@RequestParam(required = false) String gender){
+        if(gender!=null){
+            return employeeList.stream().filter(employee -> employee.getGender().equalsIgnoreCase(gender)).collect(Collectors.toList());
+        }
+        return new ArrayList<>(employeeList);
     }
 
-
+    @PutMapping("/employees")
+    public Employee updateEmployeeAgeAndSalary(@RequestParam Long id,int age,double salary){
+        Employee updateEmployee=employeeList.stream().filter(employee -> employee.getId()==id).findFirst().orElse(null);
+        updateEmployee.setAge(age);
+        updateEmployee.setSalary(salary);
+        return updateEmployee;
+    }
 
 }
