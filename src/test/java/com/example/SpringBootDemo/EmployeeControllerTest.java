@@ -135,7 +135,7 @@ public class EmployeeControllerTest {
                     "salary": 20000.00
                 }
                 """;
-        mockMvc.perform(put("/employees/1").contentType(APPLICATION_JSON).content(updateJson))
+        mockMvc.perform(put("/employees/1/age-salary").contentType(APPLICATION_JSON).content(updateJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(25))
                 .andExpect(jsonPath("$.salary").value(20000.00));

@@ -32,11 +32,18 @@ public class EmployeesController {
         return new ArrayList<>(employeeList);
     }
 
-    @PutMapping("/employees")
-    public Employee updateEmployeeAgeAndSalary(@RequestParam Long id,int age,double salary){
+    @PutMapping("/employees/{id}/age-salary")
+    public Employee updateEmployeeAgeAndSalary(@PathVariable  long id,@RequestBody Map<String,Object> updateAgeAndSalary){
         Employee updateEmployee=employeeList.stream().filter(employee -> employee.getId()==id).findFirst().orElse(null);
-        updateEmployee.setAge(age);
-        updateEmployee.setSalary(salary);
+        if(updateEmployee==null){
+            throw new IllegalArgumentException("Invalid employee id");
+        }
+        if(updateAgeAndSalary.containsKey("age")){
+            updateEmployee.setAge((Integer) updateAgeAndSalary.get("age"));
+        }
+        if(updateAgeAndSalary.containsKey("salary")){
+            updateEmployee.setSalary(Double.parseDouble(updateAgeAndSalary.get("salary").toString()));
+        }
         return updateEmployee;
     }
 
