@@ -19,8 +19,8 @@ public class EmployeesController {
     }
 
     @GetMapping("/employees/{id}")
-    public Employee getEmployee(@PathVariable long employeeId){
-        return employeeList.stream().filter(employee -> employee.getId()==employeeId).findFirst().orElse(null);
+    public Employee getEmployee(@PathVariable long id){
+        return employeeList.stream().filter(employee -> employee.getId()==id).findFirst().orElse(null);
     }
 
     @GetMapping("employees")
