@@ -28,4 +28,12 @@ public class CompanyController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+
+    @GetMapping("/companies")
+    public List<Company> getCompanies(){
+
+        return new ArrayList<>(companyList);
+
+    }
 }

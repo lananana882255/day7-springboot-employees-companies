@@ -30,7 +30,7 @@ public class EmployeesController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> getEmployeeByGender(@RequestParam(required = false) String gender
+    public List<Employee> getEmployees(@RequestParam(required = false) String gender
             ,@RequestParam(required = false) int page
             ,@RequestParam(required = false) int size){
 

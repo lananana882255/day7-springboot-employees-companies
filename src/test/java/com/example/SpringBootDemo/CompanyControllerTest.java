@@ -44,4 +44,23 @@ public class CompanyControllerTest {
                 .andExpect(jsonPath("$.name").value("Spring"));
     }
 
+    @Test
+    public void should_return_all_companies_when_get() throws Exception {
+        String companyJsonA = """
+                {
+                    "name": "Spring"
+                }
+                """;
+        String companyJsonB = """
+                {
+                    "name": "Boot"
+                }
+                """;
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonA));
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonB));
+        mockMvc.perform(get("/companies").contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
 }
