@@ -31,9 +31,15 @@ public class CompanyController {
 
 
     @GetMapping("/companies")
-    public List<Company> getCompanies(){
-
-        return new ArrayList<>(companyList);
+    public List<Company> getCompanies(@RequestParam(required = false, defaultValue = "1") int page
+            , @RequestParam(required = false, defaultValue = "5") int size){
+        List<Company> getCompaniesList= companyList;
+        int start = (page - 1) * size;
+        if (start >= getCompaniesList.size()) {
+            return Collections.emptyList();
+        }
+        int end = Math.min(start + size, getCompaniesList.size());
+        return getCompaniesList.subList(start,end);
 
     }
 }

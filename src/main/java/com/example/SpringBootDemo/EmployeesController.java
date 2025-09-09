@@ -31,8 +31,8 @@ public class EmployeesController {
 
     @GetMapping("/employees")
     public List<Employee> getEmployees(@RequestParam(required = false) String gender
-            ,@RequestParam(required = false) int page
-            ,@RequestParam(required = false) int size){
+            ,@RequestParam(required = false, defaultValue = "1") int page
+            ,@RequestParam(required = false, defaultValue = "5") int size){
 
         List<Employee> filteredEmployeesList= employeeList;
         if(gender!=null){

@@ -63,4 +63,51 @@ public class CompanyControllerTest {
                 .andExpect(jsonPath("$.length()").value(2));
     }
 
+    @Test
+    public void should_return_companies_when_get_given_page_and_size() throws Exception {
+        String companyJsonA = """
+                {
+                    "name": "Spring1"
+                }
+                """;
+        String companyJsonB = """
+                {
+                    "name": "Spring2"
+                }
+                """;
+        String companyJsonC = """
+                {
+                    "name": "Spring3"
+                }
+                """;
+        String companyJsonD = """
+                {
+                    "name": "Spring4"
+                }
+                """;
+        String companyJsonE = """
+                {
+                    "name": "Spring5"
+                }
+                """;
+        String companyJsonF = """
+                {
+                    "name": "Spring6"
+                }
+                """;
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonA));
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonB));
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonC));
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonD));
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonE));
+        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJsonF));
+        mockMvc.perform(get("/companies?page=1&size=5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(5))
+                .andExpect(jsonPath("$[0].name").value("Spring1"))
+                .andExpect(jsonPath("$[1].name").value("Spring2"))
+                .andExpect(jsonPath("$[2].name").value("Spring3"))
+                .andExpect(jsonPath("$[3].name").value("Spring4"))
+                .andExpect(jsonPath("$[4].name").value("Spring5"));
+    }
 }
