@@ -20,8 +20,12 @@ public class EmployeesController {
     }
 
     @GetMapping("/employees/{id}")
-    public Employee getEmployee(@PathVariable long id){
-        return employeeList.stream().filter(employee -> employee.getId()==id).findFirst().orElse(null);
+    public ResponseEntity<Employee> getEmployee(@PathVariable long id){
+        return employeeList.stream()
+                .filter(employee -> employee.getId()==id)
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/employees")
@@ -47,4 +51,14 @@ public class EmployeesController {
         return updateEmployee;
     }
 
+    @DeleteMapping("/employees/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable long id){
+        boolean removed=employeeList.removeIf(employee -> employee.getId()==id);
+        if(removed){
+            return ResponseEntity.noContent().build();
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

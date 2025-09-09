@@ -16,11 +16,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class EmployeeControllerTest {
     @Autowired
-    private MockMvc mockMvc ;
+    private MockMvc mockMvc;
 
     @Test
     public void should_create_employee_when_post_given_a_valid_body() throws Exception {
-        String employeeJson= """
+        String employeeJson = """
                 {
                     "name": "Tom",
                     "age": 21,
@@ -30,13 +30,13 @@ public class EmployeeControllerTest {
                 """;
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
                         .content(employeeJson))
-                        .andExpect(status().isCreated())
-                        .andExpect(jsonPath("$.id").value(1));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
     }
 
     @Test
-    public void should_return_employees_when_get_given_employee_id() throws Exception{
-        String employeeJson= """
+    public void should_return_employees_when_get_given_employee_id() throws Exception {
+        String employeeJson = """
                 {
                     "name": "Tom",
                     "age": 21,
@@ -56,7 +56,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_male_employees_when_get_given_male_gender() throws Exception {
-        String employeeJsonA= """
+        String employeeJsonA = """
                 {
                     "name": "Tom",
                     "age": 21,
@@ -64,7 +64,7 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        String employeeJsonB= """
+        String employeeJsonB = """
                 {
                     "name": "Tina",
                     "age": 22,
@@ -72,7 +72,7 @@ public class EmployeeControllerTest {
                     "salary": 28000.00
                 }
                 """;
-        String employeeJsonC= """
+        String employeeJsonC = """
                 {
                     "name": "Tony",
                     "age": 41,
@@ -94,8 +94,8 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void should_return_all_employees_when_get() throws Exception{
-        String employeeJsonA= """
+    public void should_return_all_employees_when_get() throws Exception {
+        String employeeJsonA = """
                 {
                     "name": "Tom",
                     "age": 21,
@@ -103,7 +103,7 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        String employeeJsonB= """
+        String employeeJsonB = """
                 {
                     "name": "Tina",
                     "age": 22,
@@ -120,7 +120,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_employee_when_put_given_an_employee_age_and_salry() throws Exception {
-        String employeeJson= """
+        String employeeJson = """
                 {
                     "name": "Tom",
                     "age": 21,
@@ -129,7 +129,7 @@ public class EmployeeControllerTest {
                 }
                 """;
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        String updateJson= """
+        String updateJson = """
                 {
                     "age": 25,
                     "salary": 20000.00
@@ -139,5 +139,21 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(25))
                 .andExpect(jsonPath("$.salary").value(20000.00));
+    }
+
+    @Test
+    public void should_return_status204_when_delete_given_an_employee_id() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        mockMvc.perform(delete("/employees/1")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/employees/1")).andExpect(status().isNotFound());
+
     }
 }
