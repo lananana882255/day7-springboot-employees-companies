@@ -19,4 +19,13 @@ public class CompanyController {
         companyList.add(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id",company.getId()));
     }
+
+    @GetMapping("/companies/{id}")
+    public ResponseEntity<Company> getCompany(@PathVariable long id){
+        return companyList.stream()
+                .filter(company -> company.getId()==id)
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
