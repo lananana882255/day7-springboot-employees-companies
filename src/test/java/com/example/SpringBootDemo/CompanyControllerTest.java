@@ -1,4 +1,6 @@
 package com.example.SpringBootDemo;
+import com.example.SpringBootDemo.Controller.CompanyController;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,7 +17,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CompanyControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
+    @Autowired
+    private CompanyController companyController;
+    @BeforeEach
+    public void setUp(){
+        companyController.clearCompanies();
+    }
     @Test
     public void should_create_company_when_post_given_a_valid_company() throws Exception {
         String companyJson = """

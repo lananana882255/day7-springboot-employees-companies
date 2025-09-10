@@ -1,6 +1,8 @@
 package com.example.SpringBootDemo;
 
 
+import com.example.SpringBootDemo.Controller.EmployeesController;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +19,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EmployeeControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
+    @Autowired
+    private EmployeesController employeesController;
+    @BeforeEach
+    void setUp(){
+        employeesController.clearEmployees();
+    }
     @Test
     public void should_create_employee_when_post_given_a_valid_body() throws Exception {
         String employeeJson = """
@@ -32,6 +39,21 @@ public class EmployeeControllerTest {
                         .content(employeeJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    public void should_return_employees_when_get_given_invalid_employee_id() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        mockMvc.perform(get("/employees/2"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -135,7 +157,7 @@ public class EmployeeControllerTest {
                     "salary": 20000.00
                 }
                 """;
-        mockMvc.perform(put("/employees/1/age-salary").contentType(APPLICATION_JSON).content(updateJson))
+        mockMvc.perform(put("/employees/1").contentType(APPLICATION_JSON).content(updateJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(25))
                 .andExpect(jsonPath("$.salary").value(20000.00));
