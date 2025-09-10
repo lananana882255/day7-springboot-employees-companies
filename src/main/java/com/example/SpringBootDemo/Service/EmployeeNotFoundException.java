@@ -1,4 +1,4 @@
-package com.example.SpringBootDemo;
+package com.example.SpringBootDemo.Service;
 
 public class EmployeeNotFoundException extends Exception{
 }

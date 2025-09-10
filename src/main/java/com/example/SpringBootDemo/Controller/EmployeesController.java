@@ -1,7 +1,8 @@
 package com.example.SpringBootDemo.Controller;
 
 import com.example.SpringBootDemo.Employee;
-import com.example.SpringBootDemo.EmployeeNotFoundException;
+import com.example.SpringBootDemo.Service.EmployeeNotCreatedWithInvalidArgumentsException;
+import com.example.SpringBootDemo.Service.EmployeeNotFoundException;
 import com.example.SpringBootDemo.Service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,9 @@ public class EmployeesController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Long>> createEmployee(@RequestBody Employee employee) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.create(employee));
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<Map<String, Long>> createEmployee(@RequestBody Employee employee) throws EmployeeNotCreatedWithInvalidArgumentsException {
 
+        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.create(employee));
     }
 
     @GetMapping("/{id}")

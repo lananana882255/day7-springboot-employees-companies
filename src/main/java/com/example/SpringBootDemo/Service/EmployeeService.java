@@ -1,8 +1,6 @@
 package com.example.SpringBootDemo.Service;
 
 import com.example.SpringBootDemo.Employee;
-import com.example.SpringBootDemo.EmployeeNotCreatedWithInvalidArgumentsException;
-import com.example.SpringBootDemo.EmployeeNotFoundException;
 import com.example.SpringBootDemo.Repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,7 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
     public Map<String,Long> create(Employee employee) throws EmployeeNotCreatedWithInvalidArgumentsException {
         if(employee.getAge()<18||employee.getAge()>65||(employee.getAge()>30&&employee.getSalary()<20000)){
-            throw new EmployeeNotCreatedWithInvalidArgumentsException();
+            throw new EmployeeNotCreatedWithInvalidArgumentsException("Invalid arguments.");
         }
         employee.setId(nextId++);
         employee.setStatus(true);
