@@ -4,6 +4,7 @@ import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,11 +26,30 @@ class EmployeeServiceTest {
         Employee employee=new Employee();
         employee.setAge(21);
         employee.setSalary(18000.00);
+        ArgumentCaptor<Employee> employeeCaptor = ArgumentCaptor.forClass(Employee.class);
+
+        doAnswer(invocation -> {
+            Employee savedEmployee = invocation.getArgument(0);
+            savedEmployee.setId(1);
+            return null;
+        }).when(employeeRepository).save(any(Employee.class));
         Map<String,Long> result=employeeService.create(employee);
         assertEquals(1,result.get("id"));
-//        assertEquals(true,employeeService.getEmployeeById(1).getStatus());
-        verify(employeeRepository,times(1)).save(any());
+        verify(employeeRepository, times(1)).save(employeeCaptor.capture());
+        Employee savedEmployee = employeeCaptor.getValue();
+        assertTrue(savedEmployee.getStatus());
     }
+
+    @Test
+    public void should_set_employee_status_negative_when_delete_given_an_valid_employee_id() throws EmployeeNotCreatedWithInvalidArgumentsException, EmployeeNotFoundException {
+        Employee employee=new Employee();
+        employee.setAge(21);
+        employee.setSalary(18000.00);
+        Map<String,Long> result=employeeService.create(employee);
+        assertEquals(true,employeeService.delete(1));
+        verify(employeeRepository,times(1)).delete(1);
+    }
+
 
     @Test
     public void should_not_create_employee_when_create_given_an_employee_with_age_over_30_and_salary_below_20000(){
