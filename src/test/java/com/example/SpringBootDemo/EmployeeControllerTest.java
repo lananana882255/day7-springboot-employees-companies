@@ -2,9 +2,6 @@ package com.example.SpringBootDemo;
 
 
 import com.example.SpringBootDemo.Controller.EmployeesController;
-import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
-import com.example.SpringBootDemo.Service.EmployeeNotCreatedWithInvalidArgumentsException;
-import com.example.SpringBootDemo.Service.EmployeeNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,6 +178,49 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(25))
                 .andExpect(jsonPath("$.salary").value(20000.00));
+    }
+
+    @Test
+    public void should_return_404_when_put_given_an_invalid_employee_id_and_updateImformation() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        String updateJson = """
+                {
+                    "age": 25,
+                    "salary": 20000.00
+                }
+                """;
+        mockMvc.perform(put("/employees/2").contentType(APPLICATION_JSON).content(updateJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void should_return_400_when_put_given_an_invalid_employee_id_and_updateImformation() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        mockMvc.perform(delete("/employees/1").contentType(APPLICATION_JSON));
+        String updateJson = """
+                {
+                    "age": 25,
+                    "salary": 20000.00
+                }
+                """;
+        mockMvc.perform(put("/employees/1").contentType(APPLICATION_JSON).content(updateJson))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

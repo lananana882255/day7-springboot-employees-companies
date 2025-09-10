@@ -43,7 +43,7 @@ public class EmployeesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployeeAgeAndSalary(@PathVariable  long id,@RequestBody Map<String,Object> updateInformation) {
+    public ResponseEntity<Employee> updateEmployeeAgeAndSalary(@PathVariable  long id,@RequestBody Map<String,Object> updateInformation) throws EmployeeAlreadyDeletedException, EmployeeNotFoundException {
         Employee updateEmployee=employeeService.updateEmployee(id,updateInformation);
         if(updateEmployee==null){
             return ResponseEntity.notFound().build();

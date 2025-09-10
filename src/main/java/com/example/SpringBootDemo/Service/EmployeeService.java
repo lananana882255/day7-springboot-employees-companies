@@ -40,8 +40,14 @@ public class EmployeeService {
         return targetEmployee;
     }
 
-    public Employee updateEmployee(long id, Map<String, Object> updateInformation) {
+    public Employee updateEmployee(long id, Map<String, Object> updateInformation) throws EmployeeAlreadyDeletedException, EmployeeNotFoundException {
         Employee updateEmployee=employeeRepository.updateEmployee(id,updateInformation);
+        if(updateEmployee==null){
+            throw new EmployeeNotFoundException("Employee not found.");
+        }
+        if(!updateEmployee.getStatus()){
+            throw new EmployeeAlreadyDeletedException("Employee already deleted.");
+        }
 
         return updateEmployee;
     }
