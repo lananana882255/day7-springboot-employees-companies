@@ -1,6 +1,7 @@
 package com.example.SpringBootDemo.Controller;
 
 import com.example.SpringBootDemo.Employee;
+import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
 import com.example.SpringBootDemo.Service.EmployeeNotCreatedWithInvalidArgumentsException;
 import com.example.SpringBootDemo.Service.EmployeeNotFoundException;
 import com.example.SpringBootDemo.Service.EmployeeService;
@@ -51,7 +52,7 @@ public class EmployeesController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable long id) throws EmployeeNotFoundException {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable long id) throws EmployeeNotFoundException, EmployeeAlreadyDeletedException {
         employeeService.delete(id);
         return ResponseEntity.noContent().build();
 

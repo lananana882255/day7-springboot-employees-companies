@@ -2,11 +2,13 @@ package com.example.SpringBootDemo.Service;
 
 import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Repository.EmployeeRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
@@ -20,6 +22,11 @@ class EmployeeServiceTest {
     private EmployeeService employeeService;
     @Mock
     private EmployeeRepository employeeRepository;
+
+    @BeforeEach
+    void setUp(){
+        employeeService.clearEmployees();
+    }
 
     @Test
     public void should_set_employee_status_active_when_create_given_an_valid_employee() throws EmployeeNotCreatedWithInvalidArgumentsException, EmployeeNotFoundException {
@@ -41,15 +48,41 @@ class EmployeeServiceTest {
     }
 
     @Test
-    public void should_set_employee_status_negative_when_delete_given_an_valid_employee_id() throws EmployeeNotCreatedWithInvalidArgumentsException, EmployeeNotFoundException {
+    public void should_set_employee_status_negative_when_delete_given_an_valid_employee_id() throws EmployeeNotCreatedWithInvalidArgumentsException, EmployeeNotFoundException, EmployeeAlreadyDeletedException {
         Employee employee=new Employee();
+        employee.setId(1);
         employee.setAge(21);
         employee.setSalary(18000.00);
-        Map<String,Long> result=employeeService.create(employee);
-        assertEquals(true,employeeService.delete(1));
+        employee.setStatus(true);
+        when(employeeRepository.getEmployeeById(1)).thenReturn(employee);
+        doCallRealMethod().when(employeeRepository).delete(1);
+        assertTrue(employeeService.delete(1));
+        assertFalse( employee.getStatus());
         verify(employeeRepository,times(1)).delete(1);
     }
 
+    @Test
+    public void should_return_EmployeeNotFoundException_when_delete_given_an_invalid_employee_id() throws EmployeeNotCreatedWithInvalidArgumentsException, EmployeeNotFoundException, EmployeeAlreadyDeletedException {
+        when(employeeRepository.delete(1)).thenReturn(false);
+        assertThrows(EmployeeNotFoundException.class,()->{
+            employeeService.delete(1);
+        });
+        verify(employeeRepository,times(1)).delete(1);
+    }
+
+    @Test
+    public void should_return_EmployeeAlreadyDeletedException_when_delete_given_already_deleted_employee_id() throws EmployeeNotCreatedWithInvalidArgumentsException, EmployeeNotFoundException, EmployeeAlreadyDeletedException {
+        Employee deletedEmployee = new Employee();
+        deletedEmployee.setId(1);
+        deletedEmployee.setStatus(false);
+        when(employeeRepository.getEmployeeById(1)).thenReturn(deletedEmployee);
+        doThrow(new EmployeeAlreadyDeletedException("Employee already deleted."))
+                .when(employeeRepository).delete(1);
+        assertThrows(EmployeeAlreadyDeletedException.class,()->{
+            employeeService.delete(1);
+        });
+        verify(employeeRepository,times(1)).delete(1);
+    }
 
     @Test
     public void should_not_create_employee_when_create_given_an_employee_with_age_over_30_and_salary_below_20000(){
@@ -89,7 +122,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    public void should_throw_exception_when_get_employee_given_an_invalid_employee_id() {
+    public void should_throw_EmployeeNotFoundException_when_get_employee_given_an_invalid_employee_id() {
         when(employeeRepository.getEmployeeById(3)).thenReturn(null);
         assertThrows(EmployeeNotFoundException.class,()->employeeService.getEmployeeById(3));
         verify(employeeRepository,times(1)).getEmployeeById(3);

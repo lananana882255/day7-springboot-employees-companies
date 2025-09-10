@@ -46,7 +46,7 @@ public class EmployeeService {
         return updateEmployee;
     }
 
-    public boolean delete(long id) throws EmployeeNotFoundException {
+    public boolean delete(long id) throws EmployeeNotFoundException, EmployeeAlreadyDeletedException {
         if (employeeRepository.delete(id)==false){
             throw new EmployeeNotFoundException("Employee not found.");
         }

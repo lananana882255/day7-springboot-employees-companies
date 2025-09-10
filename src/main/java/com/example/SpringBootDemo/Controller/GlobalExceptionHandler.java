@@ -1,5 +1,6 @@
 package com.example.SpringBootDemo.Controller;
 
+import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
 import com.example.SpringBootDemo.Service.EmployeeNotCreatedWithInvalidArgumentsException;
 import com.example.SpringBootDemo.Service.EmployeeNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmployeeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleEmployeeNotFoundException(Exception e){
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(EmployeeAlreadyDeletedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleEmployeeAlreadyDeletedException(Exception e){
         return e.getMessage();
     }
 

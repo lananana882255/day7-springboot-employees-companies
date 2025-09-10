@@ -2,6 +2,9 @@ package com.example.SpringBootDemo;
 
 
 import com.example.SpringBootDemo.Controller.EmployeesController;
+import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
+import com.example.SpringBootDemo.Service.EmployeeNotCreatedWithInvalidArgumentsException;
+import com.example.SpringBootDemo.Service.EmployeeNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +29,6 @@ public class EmployeeControllerTest {
         employeesController.clearEmployees();
     }
 
-    @Test
-    public void should_return_404_when_delete_given_an_invalid_employee_id() throws Exception {
-        String employeeJson = """
-                {
-                    "name": "Tom",
-                    "age": 21,
-                    "gender": "Male",
-                    "salary": 18000.00
-                }
-                """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        mockMvc.perform(delete("/employees/2")).andExpect(status().isNotFound());
-    }
 
     @Test
     public void should_not_create_employee_when_post_given_a_an_employee_with_age_over_30_and_salary_below_20000() throws Exception {
@@ -194,7 +184,21 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void should_return_status204_when_delete_given_an_employee_id() throws Exception {
+    public void should_return_404_when_delete_given_an_invalid_employee_id() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        mockMvc.perform(delete("/employees/2")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void should_return_204_when_delete_given_an_employee_id() throws Exception {
         String employeeJson = """
                 {
                     "name": "Tom",
@@ -205,7 +209,22 @@ public class EmployeeControllerTest {
                 """;
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
         mockMvc.perform(delete("/employees/1")).andExpect(status().isNoContent());
-        mockMvc.perform(delete("/employees/1")).andExpect(status().isNotFound());
+        }
+
+
+    @Test
+    public void should_return_400_when_delete_given_already_deleted_employee_id() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        mockMvc.perform(delete("/employees/1")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/employees/1")).andExpect(status().isBadRequest());
     }
 
     @Test

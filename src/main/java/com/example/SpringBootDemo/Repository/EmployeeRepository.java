@@ -1,6 +1,7 @@
 package com.example.SpringBootDemo.Repository;
 
 import com.example.SpringBootDemo.Employee;
+import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -33,8 +34,18 @@ public class EmployeeRepository {
         return filteredEmployeesList;
     }
 
-    public boolean delete(long id) {
-        return employeeList.removeIf(employee -> employee.getId()==id);
+    public boolean delete(long id) throws EmployeeAlreadyDeletedException {
+        Employee removeEmployee= getEmployeeById(id);
+        if(removeEmployee==null){
+            return false;
+        }
+        if(removeEmployee.getStatus()){
+            removeEmployee.setStatus(false);
+            return true;
+        }
+        else{
+            throw new EmployeeAlreadyDeletedException("Employee already deleted.");
+        }
     }
 
     public Employee getEmployeeById(long id) {
