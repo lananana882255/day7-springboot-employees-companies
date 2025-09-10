@@ -1,17 +1,14 @@
 package com.example.SpringBootDemo.Controller;
 
 import com.example.SpringBootDemo.Employee;
-import com.example.SpringBootDemo.EmployeeNotCreatedWithInvalidAgeException;
 import com.example.SpringBootDemo.EmployeeNotFoundException;
 import com.example.SpringBootDemo.Service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequestMapping("/employees")
 @RestController

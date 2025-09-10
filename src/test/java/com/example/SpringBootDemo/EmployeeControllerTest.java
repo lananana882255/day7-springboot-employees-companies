@@ -25,6 +25,22 @@ public class EmployeeControllerTest {
     void setUp(){
         employeesController.clearEmployees();
     }
+
+    @Test
+    public void should_not_create_employee_when_post_given_a_an_employee_with_age_over_30_and_salary_below_20000() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 31,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
+                        .content(employeeJson))
+                .andExpect(status().isBadRequest());
+    }
+
     @Test
     public void should_create_employee_when_post_given_a_valid_body() throws Exception {
         String employeeJson = """

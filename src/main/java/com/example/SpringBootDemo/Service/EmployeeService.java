@@ -1,7 +1,7 @@
 package com.example.SpringBootDemo.Service;
 
 import com.example.SpringBootDemo.Employee;
-import com.example.SpringBootDemo.EmployeeNotCreatedWithInvalidAgeException;
+import com.example.SpringBootDemo.EmployeeNotCreatedWithInvalidArgumentsException;
 import com.example.SpringBootDemo.EmployeeNotFoundException;
 import com.example.SpringBootDemo.Repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,9 @@ public class EmployeeService {
     private static long nextId=1;
     @Autowired
     private EmployeeRepository employeeRepository;
-    public void create(Employee employee) throws EmployeeNotCreatedWithInvalidAgeException {
-        if(employee.getAge()<18||employee.getAge()>65){
-            throw new EmployeeNotCreatedWithInvalidAgeException();
+    public void create(Employee employee) throws EmployeeNotCreatedWithInvalidArgumentsException {
+        if(employee.getAge()<18||employee.getAge()>65||(employee.getAge()>30&&employee.getSalary()<20000)){
+            throw new EmployeeNotCreatedWithInvalidArgumentsException();
         }
         employee.setId(nextId++);
         employeeRepository.save(employee);
