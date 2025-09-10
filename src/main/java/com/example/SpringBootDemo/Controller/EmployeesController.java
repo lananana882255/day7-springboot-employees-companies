@@ -21,13 +21,13 @@ public class EmployeesController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<Map<String, Long>> createEmployee(@RequestBody Employee employee) {
         try {
-            employeeService.create(employee);
+            return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.create(employee));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id",employee.getId()));
+
     }
 
     @GetMapping("/{id}")
