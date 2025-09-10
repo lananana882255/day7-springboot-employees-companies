@@ -1,6 +1,7 @@
 package com.example.SpringBootDemo.Controller;
 
 import com.example.SpringBootDemo.Service.EmployeeNotCreatedWithInvalidArgumentsException;
+import com.example.SpringBootDemo.Service.EmployeeNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,5 +18,10 @@ public class GlobalExceptionHandler {
         return e.getMessage();
     }
 
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleEmployeeNotFoundException(Exception e){
+        return e.getMessage();
+    }
 
 }

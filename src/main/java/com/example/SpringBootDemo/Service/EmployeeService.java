@@ -35,7 +35,7 @@ public class EmployeeService {
     public Employee getEmployeeById(long id) throws EmployeeNotFoundException {
         Employee targetEmployee=employeeRepository.getEmployeeById(id);
         if(targetEmployee==null){
-            throw new EmployeeNotFoundException();
+            throw new EmployeeNotFoundException("Employee not found.");
         }
         return targetEmployee;
     }

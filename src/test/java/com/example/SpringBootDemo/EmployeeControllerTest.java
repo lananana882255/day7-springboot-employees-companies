@@ -59,7 +59,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void should_return_employees_when_get_given_invalid_employee_id() throws Exception {
+    public void should_return_404_when_get_given_invalid_employee_id() throws Exception {
         String employeeJson = """
                 {
                     "name": "Tom",

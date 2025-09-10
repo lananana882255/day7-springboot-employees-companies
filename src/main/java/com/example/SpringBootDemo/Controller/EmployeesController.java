@@ -29,13 +29,7 @@ public class EmployeesController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployee(@PathVariable long id) throws EmployeeNotFoundException {
-        try {
-            Employee result = employeeService.getEmployeeById(id);
-            return ResponseEntity.ok(result);
-        }catch (Exception e){
-            return  ResponseEntity.notFound().build();
-        }
-
+            return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
     @GetMapping
