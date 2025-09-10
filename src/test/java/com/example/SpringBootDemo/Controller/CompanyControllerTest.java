@@ -1,5 +1,4 @@
-package com.example.SpringBootDemo;
-import com.example.SpringBootDemo.Controller.CompanyController;
+package com.example.SpringBootDemo.Controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -14,8 +14,11 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
     public Map<String,Long> create(Employee employee) throws EmployeeNotCreatedWithInvalidArgumentsException {
-        if(employee.getAge()<18||employee.getAge()>65||(employee.getAge()>30&&employee.getSalary()<20000)){
-            throw new EmployeeNotCreatedWithInvalidArgumentsException("Invalid arguments.");
+        if(employee.getAge()<18||employee.getAge()>65){
+            throw new EmployeeNotCreatedWithInvalidArgumentsException("Age must be over 18 and below 65.");
+        }
+        if((employee.getAge()>30&&employee.getSalary()<20000)){
+            throw new EmployeeNotCreatedWithInvalidArgumentsException("When age is over 30, salary must be larger than 20000.");
         }
         employee.setId(nextId++);
         employee.setStatus(true);
