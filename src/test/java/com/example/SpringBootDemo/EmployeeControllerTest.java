@@ -26,6 +26,19 @@ public class EmployeeControllerTest {
         employeesController.clearEmployees();
     }
 
+    @Test
+    public void should_return_404_when_delete_given_an_invalid_employee_id() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        mockMvc.perform(delete("/employees/2")).andExpect(status().isNotFound());
+    }
 
     @Test
     public void should_not_create_employee_when_post_given_a_an_employee_with_age_over_30_and_salary_below_20000() throws Exception {
