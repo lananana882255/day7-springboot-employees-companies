@@ -19,6 +19,7 @@ public class Employee {
     @Column(name="company_id")
     private long company_id;
 
+    public Employee() {}
 
     public long getId() {
         return id;
@@ -70,5 +71,8 @@ public class Employee {
 
     public long getCompany_id() {
         return company_id;
+    }
+
+    public void setCompanyId(long companyId) {
     }
 }

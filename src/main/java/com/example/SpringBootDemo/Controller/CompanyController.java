@@ -46,7 +46,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}/name")
-    public ResponseEntity<Company> updateCompanyName(@PathVariable long id, @RequestBody Map<String, Object> updateName) {
+    public ResponseEntity<Company> updateCompanyName(@PathVariable long id, @RequestBody String updateName) {
         Company updateCompany = companyService.updateEmployee(id, updateName);
         if (updateCompany == null) {
             return ResponseEntity.notFound().build();

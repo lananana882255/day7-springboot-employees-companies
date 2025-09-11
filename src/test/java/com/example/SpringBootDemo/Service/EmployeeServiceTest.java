@@ -2,12 +2,15 @@ package com.example.SpringBootDemo.Service;
 
 import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Repository.EmployeeRepositoryDBImp;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,41 +23,37 @@ class EmployeeServiceTest {
     @Mock
     private EmployeeRepositoryDBImp employeeRepository;
 
-//    @BeforeEach
-//    void setUp() {
-//        employeeService.clearEmployees();
-//    }
-//    @Test
-//    public void should_not_create_employee_when_create_given_an_existed_employee() throws EmployeeNotCreatedWithInvalidArgumentsException {
-//        Employee employeeA = new Employee();
-//        employeeA.setName("Tom");
-//        employeeA.setSalary(18000.00);
-//        employeeService.create(employeeA);
-//        Employee employeeB = new Employee();
-//        employeeB.setName("Tom");
-//        employeeB.setSalary(18000.00);
-//        assertThrows(EmployeeAlreadyExistedException.class, () -> employeeService.create(employeeB));
-//        verify(employeeRepository, times(1)).save(any());
-//    }
+    @BeforeEach
+    void setUp() {
+        employeeService.clearEmployees();
+    }
 
-//    @Test
-//    public void should_set_employee_status_active_when_create_given_an_valid_employee() throws EmployeeNotCreatedWithInvalidArgumentsException, EmployeeNotFoundException {
-//        Employee employee = new Employee();
-//        employee.setAge(21);
-//        employee.setSalary(18000.00);
-//        ArgumentCaptor<Employee> employeeCaptor = ArgumentCaptor.forClass(Employee.class);
-//
-//        doAnswer(invocation -> {
-//            Employee savedEmployee = invocation.getArgument(0);
-//            savedEmployee.setId(1);
-//            return null;
-//        }).when(employeeRepository).save(any(Employee.class));
-//        Map<String, Long> result = employeeService.create(employee);
-//        assertEquals(1, result.get("id"));
-//        verify(employeeRepository, times(1)).save(employeeCaptor.capture());
-//        Employee savedEmployee = employeeCaptor.getValue();
-//        assertTrue(savedEmployee.getStatus());
-//    }
+    @Test
+    public void should_not_create_employee_when_create_given_an_existed_employee() throws EmployeeNotCreatedWithInvalidArgumentsException {
+        Employee employeeA = new Employee();
+        employeeA.setName("Tom");
+        employeeA.setAge(22);
+        employeeA.setSalary(18000.00);
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employeeA);
+        when(employeeRepository.getEmployees(null,null,null)).thenReturn(employees);
+        assertThrows(EmployeeAlreadyExistedException.class, () -> employeeService.create(employeeA));
+        verify(employeeRepository, times(0)).save(any());
+    }
+
+        @Test
+    public void should_not_update_employee_when_create_given_an_update_employee_is_equal_to_employee() throws EmployeeNotCreatedWithInvalidArgumentsException {
+        Employee employeeA = new Employee();
+        employeeA.setName("Tom");
+        employeeA.setAge(22);
+        employeeA.setSalary(18000.00);
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employeeA);
+        when(employeeRepository.getEmployees(null,null,null)).thenReturn(employees);
+        assertThrows(EmployeeAlreadyExistedException.class, () -> employeeService.updateEmployee(1,employeeA));
+        verify(employeeRepository, times(0)).save(any());
+    }
+
 
     @Test
     public void should_not_create_employee_when_create_given_an_employee_with_age_over_30_and_salary_below_20000() {

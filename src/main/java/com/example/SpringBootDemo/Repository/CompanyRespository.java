@@ -1,10 +1,12 @@
 package com.example.SpringBootDemo.Repository;
 
 import com.example.SpringBootDemo.Company;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface CompanyRespository {
     void clearComanies();
 
@@ -16,5 +18,5 @@ public interface CompanyRespository {
 
     boolean delete(long id);
 
-    Company updateCompany(long id, Map<String, Object> updateName);
+    Company updateCompany(long id, String  updateName);
 }

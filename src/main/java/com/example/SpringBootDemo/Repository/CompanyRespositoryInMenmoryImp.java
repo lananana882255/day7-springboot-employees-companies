@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+
 public class CompanyRespositoryInMenmoryImp implements CompanyRespository {
     private final List<Company> companyList = new ArrayList<>();
     private static long nextId = 1;
@@ -52,13 +52,13 @@ public class CompanyRespositoryInMenmoryImp implements CompanyRespository {
     }
 
     @Override
-    public Company updateCompany(long id, Map<String, Object> updateName) {
+    public Company updateCompany(long id, String updateName) {
         Company updateCompany = companyList.stream().filter(company -> company.getId() == id).findFirst().orElse(null);
         if (updateCompany == null) {
             return null;
         }
-        if (updateName.containsKey("name")) {
-            updateCompany.setName(updateName.get("name").toString());
+        if (updateName!=null) {
+            updateCompany.setName(updateName);
         }
         return updateCompany;
     }

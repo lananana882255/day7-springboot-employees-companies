@@ -1,7 +1,10 @@
 package com.example.SpringBootDemo.Controller;
 
 
+import com.example.SpringBootDemo.Company;
 import com.example.SpringBootDemo.Employee;
+import com.example.SpringBootDemo.Repository.EmployeeRepository;
+import com.example.SpringBootDemo.Repository.CompanyRespository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +27,21 @@ public class EmployeeControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private EmployeesController employeesController;
+    @Autowired
+    private CompanyRespository companyRespository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @BeforeEach
     void setUp() {
         employeesController.clearEmployees();
+        companyRespository.clearComanies();
+    }
+
+    private long createCompany(String name) {
+        Company company = new Company();
+        company.setName(name);
+        return company.getId();
     }
 
     private long createEmployee(String requestBody) throws Exception {
@@ -40,14 +54,16 @@ public class EmployeeControllerTest {
     //TODO
     @Test
     public void should_not_create_employee_when_post_given_an_existed_employee() throws Exception {
-        String employeeJson = """
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId) ;
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
                         .content(employeeJson))
                 .andExpect(status().isCreated());
@@ -58,14 +74,16 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_not_create_employee_when_post_given_an_employee_with_age_over_30_and_salary_below_20000() throws Exception {
-        String employeeJson = """
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 31,
                     "gender": "Male",
                     "salary": 18000.00
+                    "companyId": %d
                 }
-                """;
+                """,companyId) ;
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
                         .content(employeeJson))
                 .andExpect(status().isBadRequest());
@@ -73,46 +91,62 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_create_employee_when_post_given_a_valid_body() throws Exception {
-        String employeeJson = """
+        long companyAId = createCompany("Test Company");
+        String employeeJsonA =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        long employeeId = createEmployee(employeeJson);
+                """,companyAId) ;
+        long companyBId = createCompany("Test Company");
+        String employeeJsonB =String.format("""
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00,
+                    "companyId": %d
+                }
+                """,companyBId) ;
+        long employeeId = createEmployee(employeeJsonA);
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
-                        .content(employeeJson))
+                        .content(employeeJsonB))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(employeeId + 1));
     }
 
     @Test
     public void should_return_404_when_get_given_invalid_employee_id() throws Exception {
-        String employeeJson = """
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId) ;
         long employeeId = createEmployee(employeeJson);
-        mockMvc.perform(get("/employees/" + employeeId))
+        mockMvc.perform(get("/employees/" + 9999))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void should_return_employees_when_get_given_employee_id() throws Exception {
-        String employeeJson = """
+    public void should_return_employee_when_get_given_employee_id() throws Exception {
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId) ;
         long employeeId = createEmployee(employeeJson);
         mockMvc.perform(get("/employees/" + employeeId))
                 .andExpect(status().isOk())
@@ -120,38 +154,43 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.name").value("Tom"))
                 .andExpect(jsonPath("$.age").value(21))
                 .andExpect(jsonPath("$.gender").value("Male"))
-                .andExpect(jsonPath("$.salary").value(18000.00));
+                .andExpect(jsonPath("$.salary").value(18000.00))
+                .andExpect(jsonPath("$.status").value(true));
     }
 
     @Test
     public void should_return_male_employees_when_get_given_male_gender() throws Exception {
-        String employeeJsonA = """
+        long companyId = createCompany("Test Company");
+        String employeeJsonA =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        String employeeJsonB = """
+                """,companyId) ;
+        String employeeJsonB = String.format("""
                 {
                     "name": "Tina",
-                    "age": 22,
+                    "age": 21,
                     "gender": "Female",
-                    "salary": 28000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        String employeeJsonC = """
+                """,companyId) ;
+        String employeeJsonC = String.format("""
                 {
                     "name": "Tony",
-                    "age": 41,
+                    "age": 21,
                     "gender": "Male",
-                    "salary": 38000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonA));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonB));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonC));
+                """,companyId) ;
+        createEmployee(employeeJsonA);
+        createEmployee(employeeJsonB);
+        createEmployee(employeeJsonC);
         mockMvc.perform(get("/employees?gender=Male"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -164,24 +203,27 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_all_employees_when_get() throws Exception {
-        String employeeJsonA = """
+        long companyId = createCompany("Test Company");
+        String employeeJsonA =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
                     "salary": 18000.00
+                    "companyId": %d
                 }
-                """;
-        String employeeJsonB = """
+                """,companyId) ;
+        String employeeJsonB = String.format("""
                 {
-                    "name": "Tina",
-                    "age": 22,
-                    "gender": "Female",
-                    "salary": 28000.00
+                    "name": "Tony",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                    "companyId": %d
                 }
-                """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonA));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonB));
+                """,companyId) ;
+        createEmployee(employeeJsonA);
+        createEmployee(employeeJsonB);
         mockMvc.perform(get("/employees").contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -194,9 +236,10 @@ public class EmployeeControllerTest {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
                 }
                 """;
+
         long employeeId = createEmployee(employeeJson);
         String updateJson = """
                 {
@@ -212,14 +255,16 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_404_when_put_given_an_invalid_employee_id_and_updateImformation() throws Exception {
-        String updateJson = """
+        long companyId = createCompany("Test Company");
+        String updateJson =String.format("""
                 {
-                    "name": "Tony",
+                    "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId);
 
         mockMvc.perform(put("/employees/9999" ).contentType(APPLICATION_JSON).content(updateJson))
                 .andExpect(status().isNotFound());
@@ -228,28 +273,32 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_404_when_delete_given_an_invalid_employee_id() throws Exception {
-        String employeeJson = """
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        long employeeId = createEmployee(employeeJson);
-        mockMvc.perform(delete("/employees/" + employeeId + 1)).andExpect(status().isNotFound());
+                """,companyId);
+        createEmployee(employeeJson);
+        mockMvc.perform(delete("/employees/" + 9999)).andExpect(status().isNotFound());
     }
 
     @Test
     public void should_return_204_when_delete_given_an_employee_id() throws Exception {
-        String employeeJson = """
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId);
         long employeeId = createEmployee(employeeJson);
         mockMvc.perform(delete("/employees/" + employeeId)).andExpect(status().isNoContent());
     }
@@ -257,14 +306,16 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_400_when_delete_given_already_deleted_employee_id() throws Exception {
-        String employeeJson = """
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId);
         long employeeId = createEmployee(employeeJson);
         mockMvc.perform(delete("/employees/" + employeeId)).andExpect(status().isNoContent());
         mockMvc.perform(delete("/employees/" + employeeId)).andExpect(status().isBadRequest());
@@ -272,60 +323,67 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_employees_when_get_given_page_and_size() throws Exception {
-        String employeeJsonA = """
+        long companyId = createCompany("Test Company");
+        String employeeJsonA =String.format("""
                 {
-                    "name": "Tom1",
+                    "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        String employeeJsonB = """
+                """,companyId) ;
+        String employeeJsonB = String.format("""
                 {
-                    "name": "Tom2",
+                    "name": "Tina",
+                    "age": 21,
+                    "gender": "Female",
+                    "salary": 18000.00
+                    "companyId": %d
+                }
+                """,companyId) ;
+        String employeeJsonC = String.format("""
+                {
+                    "name": "Tony",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        String employeeJsonC = """
+                """,companyId) ;
+        String employeeJsonD =String.format("""
                 {
-                    "name": "Tom3",
+                    "name": "Joe",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        String employeeJsonD = """
+                """,companyId) ;
+        String employeeJsonE = String.format("""
                 {
-                    "name": "Tom4",
+                    "name": "Fred",
+                    "age": 21,
+                    "gender": "Female",
+                    "salary": 18000.00,
+                    "companyId": %d
+                }
+                """,companyId) ;
+        String employeeJsonF = String.format("""
+                {
+                    "name": "Tim",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
-        String employeeJsonE = """
-                {
-                    "name": "Tom5",
-                    "age": 21,
-                    "gender": "Male",
-                    "salary": 18000.00
-                }
-                """;
-        String employeeJsonF = """
-                {
-                    "name": "Tom6",
-                    "age": 21,
-                    "gender": "Male",
-                    "salary": 18000.00
-                }
-                """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonA));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonB));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonC));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonD));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonE));
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJsonF));
+                """,companyId) ;
+        createEmployee(employeeJsonA);
+        createEmployee(employeeJsonB);
+        createEmployee(employeeJsonC);
+        createEmployee(employeeJsonD);
+        createEmployee(employeeJsonE);
+        createEmployee(employeeJsonF);
         mockMvc.perform(get("/employees?page=1&size=5"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(5))

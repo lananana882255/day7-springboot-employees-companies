@@ -32,7 +32,7 @@ public class CompanyService {
         return companyRespository.getCompanyById(id);
     }
 
-    public Company updateEmployee(long id, Map<String, Object> updateName) {
+    public Company updateEmployee(long id, String updateName) {
 
         Company updateCompany = companyRespository.updateCompany(id, updateName);
         return updateCompany;

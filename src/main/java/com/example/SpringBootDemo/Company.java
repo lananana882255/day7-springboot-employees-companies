@@ -12,7 +12,7 @@ public class Company {
     private long id;
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")
     private List<Employee> employees;
 
