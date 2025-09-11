@@ -5,6 +5,16 @@ public class UpdateEmployeeReq {
     private String name;
     private double salary;
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    private String gender;
+
     public int getAge() {
         return age;
     }

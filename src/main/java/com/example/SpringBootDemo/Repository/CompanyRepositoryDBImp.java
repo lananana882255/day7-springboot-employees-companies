@@ -48,7 +48,7 @@ public class CompanyRepositoryDBImp implements CompanyRespository {
 
     @Override
     public Company updateCompany(long id, Company companyName) {
-        Company updateCompany=getCompanyById(id);
+        Company updateCompany = getCompanyById(id);
         updateCompany.setName(companyName.getName());
         return companyJPARepository.save(updateCompany);
     }

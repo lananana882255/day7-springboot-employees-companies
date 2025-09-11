@@ -1,5 +1,6 @@
 package com.example.SpringBootDemo.Repository;
 
+import com.example.SpringBootDemo.Controller.UpdateEmployeeReq;
 import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
 import org.springframework.stereotype.Repository;
@@ -56,7 +57,7 @@ public class EmployeeRepositoryImp implements  EmployeeRepository {
     }
 
     @Override
-    public Employee updateEmployee(long id, Employee updateInformation) {
+    public Employee updateEmployee(long id, UpdateEmployeeReq updateInformation) {
         Employee updateEmployee = getEmployeeById(id);
         if (updateEmployee == null) {
             return null;
@@ -65,7 +66,6 @@ public class EmployeeRepositoryImp implements  EmployeeRepository {
         updateEmployee.setGender(updateInformation.getGender());
         updateEmployee.setAge(updateInformation.getAge());
         updateEmployee.setSalary(updateInformation.getSalary());
-        updateEmployee.setStatus(updateInformation.getStatus());
 
         return updateEmployee;
     }

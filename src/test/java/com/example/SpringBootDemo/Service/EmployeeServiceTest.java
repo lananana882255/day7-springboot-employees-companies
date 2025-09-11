@@ -1,5 +1,6 @@
 package com.example.SpringBootDemo.Service;
 
+import com.example.SpringBootDemo.Controller.UpdateEmployeeReq;
 import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Repository.EmployeeRepositoryDBImp;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,21 +37,25 @@ class EmployeeServiceTest {
         employeeA.setSalary(18000.00);
         List<Employee> employees = new ArrayList<>();
         employees.add(employeeA);
-        when(employeeRepository.getEmployees(null,null,null)).thenReturn(employees);
+        when(employeeRepository.getEmployees(null, null, null)).thenReturn(employees);
         assertThrows(EmployeeAlreadyExistedException.class, () -> employeeService.create(employeeA));
         verify(employeeRepository, times(0)).save(any());
     }
 
-        @Test
+    @Test
     public void should_not_update_employee_when_create_given_an_update_employee_is_equal_to_employee() throws EmployeeNotCreatedWithInvalidArgumentsException {
         Employee employeeA = new Employee();
         employeeA.setName("Tom");
         employeeA.setAge(22);
         employeeA.setSalary(18000.00);
+        UpdateEmployeeReq employee = new UpdateEmployeeReq();
+        employee.setName("Tom");
+        employee.setAge(22);
+        employee.setSalary(18000.00);
         List<Employee> employees = new ArrayList<>();
         employees.add(employeeA);
-        when(employeeRepository.getEmployees(null,null,null)).thenReturn(employees);
-        assertThrows(EmployeeAlreadyExistedException.class, () -> employeeService.updateEmployee(1,employeeA));
+        when(employeeRepository.getEmployees(null, null, null)).thenReturn(employees);
+        assertThrows(EmployeeAlreadyExistedException.class, () -> employeeService.updateEmployee(1, employee));
         verify(employeeRepository, times(0)).save(any());
     }
 
@@ -135,8 +140,8 @@ class EmployeeServiceTest {
 
     @Test
     public void should_return_updateEmployee_when_update_given_valid_employee_id_and_updateImformation() throws EmployeeAlreadyDeletedException, EmployeeNotFoundException {
-        Employee updateInformation = new Employee();
-        updateInformation.setName( "Tony");
+        UpdateEmployeeReq updateInformation = new UpdateEmployeeReq();
+        updateInformation.setName("Tony");
         updateInformation.setAge(30);
 
         Employee updatedEmployee = new Employee();
@@ -156,9 +161,8 @@ class EmployeeServiceTest {
 
     @Test
     public void should_return_404_when_update_given_invalid_employee_id_and_updateImformation() {
-        Employee updateInformation = new Employee();
-        updateInformation.setName( "Tony");
-        updateInformation.setId(1);
+        UpdateEmployeeReq updateInformation = new UpdateEmployeeReq();
+        updateInformation.setName("Tony");
         when(employeeRepository.updateEmployee(1, updateInformation)).thenReturn(null);
         assertThrows(EmployeeNotFoundException.class, () -> {
             employeeService.updateEmployee(1, updateInformation);
@@ -168,9 +172,8 @@ class EmployeeServiceTest {
 
     @Test
     public void should_return_400_when_update_given_valid_employee_id_but_status_is_negative_and_updateImformation() {
-        Employee updateInformation = new Employee();
-        updateInformation.setName( "Tony");
-        updateInformation.setId(1);
+        UpdateEmployeeReq updateInformation = new UpdateEmployeeReq();
+        updateInformation.setName("Tony");
 
         Employee deletedEmployee = new Employee();
         deletedEmployee.setId(1);

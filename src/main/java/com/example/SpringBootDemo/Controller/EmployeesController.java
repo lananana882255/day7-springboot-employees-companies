@@ -45,7 +45,7 @@ public class EmployeesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployeeAgeAndSalary(@PathVariable long id, @RequestBody Employee updateInformation) throws EmployeeAlreadyDeletedException, EmployeeNotFoundException {
+    public ResponseEntity<Employee> updateEmployeeAgeAndSalary(@PathVariable long id, @RequestBody UpdateEmployeeReq updateInformation) throws EmployeeAlreadyDeletedException, EmployeeNotFoundException {
         return ResponseEntity.ok(employeeService.updateEmployee(id, updateInformation));
     }
 

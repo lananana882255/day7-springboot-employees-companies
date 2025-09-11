@@ -1,5 +1,6 @@
 package com.example.SpringBootDemo.Repository;
 
+import com.example.SpringBootDemo.Controller.UpdateEmployeeReq;
 import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
 import com.example.SpringBootDemo.Service.EmployeeNotFoundException;
@@ -19,7 +20,7 @@ public class EmployeeRepositoryDBImp implements EmployeeRepository {
     @Override
     public Map<String, Long> save(Employee employee) {
         employee.setStatus(true);
-        Employee savedEmployee =employeeJPARepository.save(employee);
+        Employee savedEmployee = employeeJPARepository.save(employee);
         return Map.of("id", savedEmployee.getId());
     }
 
@@ -55,8 +56,7 @@ public class EmployeeRepositoryDBImp implements EmployeeRepository {
     }
 
     @Override
-    public Employee updateEmployee(long id, Employee updateEmployee) {
-        updateEmployee.setId(id);
+    public Employee updateEmployee(long id, UpdateEmployeeReq updateEmployee) {
         Employee existingEmployee = employeeJPARepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee Not Found"));
         if (updateEmployee.getAge() != 0) {
@@ -71,7 +71,7 @@ public class EmployeeRepositoryDBImp implements EmployeeRepository {
         if (updateEmployee.getGender() != null) {
             existingEmployee.setGender(updateEmployee.getGender());
         }
-        return employeeJPARepository.save( updateEmployee);
+        return employeeJPARepository.save(existingEmployee);
     }
 
 }

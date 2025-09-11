@@ -1,5 +1,6 @@
 package com.example.SpringBootDemo.Service;
 
+import com.example.SpringBootDemo.Controller.UpdateEmployeeReq;
 import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Repository.EmployeeRepository;
 import com.example.SpringBootDemo.Repository.EmployeeRepositoryDBImp;
@@ -16,7 +17,7 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public Map<String, Long> create(Employee employee)  {
+    public Map<String, Long> create(Employee employee) {
         if (findSameEmployee(employee)) {
             throw new EmployeeAlreadyExistedException("Employee already exists.");
         }
@@ -30,13 +31,13 @@ public class EmployeeService {
     }
 
     private boolean findSameEmployee(Employee employee) {
-        Employee targetEmployee= employeeRepository.getEmployees(null,null,null)
+        Employee targetEmployee = employeeRepository.getEmployees(null, null, null)
                 .stream().filter(employee1 -> employee1.getAge() == employee.getAge() &&
                         employee1.getName().equals(employee.getName()) &&
-                        (employee1.getGender() == null ? employee.getGender() == null : employee1.getGender().equals(employee.getGender()))  &&
+                        (employee1.getGender() == null ? employee.getGender() == null : employee1.getGender().equals(employee.getGender())) &&
                         employee1.getCompany_id() == employee.getCompany_id() &&
                         employee1.getSalary() == employee.getSalary()).findFirst().orElse(null);
-        if(targetEmployee == null) {
+        if (targetEmployee == null) {
             return false;
         }
         return true;
@@ -59,11 +60,15 @@ public class EmployeeService {
         return targetEmployee;
     }
 
-    public Employee updateEmployee(long id, Employee updateInformation) {
-        if(findSameEmployee(updateInformation)) {
+    public Employee updateEmployee(long id, UpdateEmployeeReq updateInformation) {
+        Employee targetEmployee = new Employee();
+        targetEmployee.setName(updateInformation.getName());
+        targetEmployee.setGender(updateInformation.getGender());
+        targetEmployee.setSalary(updateInformation.getSalary());
+        targetEmployee.setAge(updateInformation.getAge());
+        if (findSameEmployee(targetEmployee)) {
             throw new EmployeeAlreadyExistedException("Employee already exists.");
         }
-        updateInformation.setStatus(true);
         Employee updateEmployee = employeeRepository.updateEmployee(id, updateInformation);
         if (updateEmployee == null) {
             throw new EmployeeNotFoundException("Employee not found.");
@@ -75,7 +80,7 @@ public class EmployeeService {
         return updateEmployee;
     }
 
-    public boolean delete(long id)  {
+    public boolean delete(long id) {
 
         Employee removeEmployee = getEmployeeById(id);
         if (!removeEmployee.getStatus()) {

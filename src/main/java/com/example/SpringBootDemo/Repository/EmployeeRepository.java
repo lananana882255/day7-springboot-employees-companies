@@ -1,5 +1,6 @@
 package com.example.SpringBootDemo.Repository;
 
+import com.example.SpringBootDemo.Controller.UpdateEmployeeReq;
 import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,5 @@ public interface EmployeeRepository  {
 
     Employee getEmployeeById(long id);
 
-    Employee updateEmployee(long id, Employee updateEmployee);
+    Employee updateEmployee(long id, UpdateEmployeeReq updateEmployee);
 }
