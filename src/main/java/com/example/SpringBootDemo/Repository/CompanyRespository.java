@@ -4,13 +4,12 @@ import com.example.SpringBootDemo.Company;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface CompanyRespository {
     void clearComanies();
 
-    void save(Company company);
+    Company save(Company company);
 
     List<Company> getCompanies(Integer page, Integer size);
 
@@ -18,5 +17,5 @@ public interface CompanyRespository {
 
     boolean delete(long id);
 
-    Company updateCompany(long id, String  updateName);
+    Company updateCompany(long id, Company  updateName);
 }

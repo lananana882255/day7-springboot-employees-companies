@@ -2,6 +2,8 @@ package com.example.SpringBootDemo.Repository;
 
 import com.example.SpringBootDemo.Company;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,12 +19,17 @@ public class CompanyRepositoryDBImp implements CompanyRespository {
     }
 
     @Override
-    public void save(Company company) {
-        companyJPARepository.save(company);
+    public Company save(Company company) {
+        return companyJPARepository.save(company);
     }
 
     @Override
     public List<Company> getCompanies(Integer page, Integer size) {
+
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page - 1, size);
+            return companyJPARepository.findAll(pageable).getContent();
+        }
         return companyJPARepository.findAll();
     }
 
@@ -40,10 +47,9 @@ public class CompanyRepositoryDBImp implements CompanyRespository {
     }
 
     @Override
-    public Company updateCompany(long id, String companyName) {
-        Company updateCompany=companyJPARepository.findById(id).orElseThrow(() -> new CompanyNotFoundException("Company not found"));
-        updateCompany.setName(companyName);
-        companyJPARepository.save(updateCompany);
-        return null;
+    public Company updateCompany(long id, Company companyName) {
+        Company updateCompany=getCompanyById(id);
+        updateCompany.setName(companyName.getName());
+        return companyJPARepository.save(updateCompany);
     }
 }

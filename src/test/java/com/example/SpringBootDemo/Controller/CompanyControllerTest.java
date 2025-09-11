@@ -1,11 +1,14 @@
 package com.example.SpringBootDemo.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -25,6 +28,13 @@ public class CompanyControllerTest {
         companyController.clearCompanies();
     }
 
+    private long createCompany(String requestBody) throws Exception {
+        ResultActions resultActions = mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(requestBody));
+        MvcResult mvcResult = resultActions.andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        return new ObjectMapper().readTree(response).get("id").asLong();
+    }
+
     @Test
     public void should_create_company_when_post_given_a_valid_company() throws Exception {
         String companyJson = """
@@ -34,8 +44,7 @@ public class CompanyControllerTest {
                 """;
         mockMvc.perform(post("/companies").contentType(APPLICATION_JSON)
                         .content(companyJson))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(status().isCreated());
     }
 
 
@@ -46,10 +55,10 @@ public class CompanyControllerTest {
                     "name": "Spring"
                 }
                 """;
-        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJson));
-        mockMvc.perform(get("/companies/1"))
+        long companyId = createCompany(companyJson);
+        mockMvc.perform(get("/companies/"+companyId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(companyId))
                 .andExpect(jsonPath("$.name").value("Spring"));
     }
 
@@ -127,14 +136,14 @@ public class CompanyControllerTest {
                     "name": "Spring"
                 }
                 """;
-        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJson));
+        long companyId = createCompany(companyJson);
 
         String updateJson = """
                 {
                     "name": "Spring1"
                 }
                 """;
-        mockMvc.perform(put("/companies/1/name").contentType(APPLICATION_JSON).content(updateJson))
+        mockMvc.perform(put(String.format("/companies/%d/name",companyId)).contentType(APPLICATION_JSON).content(updateJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Spring1"));
     }
@@ -146,9 +155,9 @@ public class CompanyControllerTest {
                     "name": "Spring"
                 }
                 """;
-        mockMvc.perform(post("/companies").contentType(APPLICATION_JSON).content(companyJson));
-        mockMvc.perform(delete("/companies/1")).andExpect(status().isNoContent());
-        mockMvc.perform(delete("/companies/1")).andExpect(status().isNotFound());
+        long companyId = createCompany(companyJson);
+        mockMvc.perform(delete("/companies/"+companyId)).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/companies/"+companyId)).andExpect(status().isNotFound());
     }
 
 }

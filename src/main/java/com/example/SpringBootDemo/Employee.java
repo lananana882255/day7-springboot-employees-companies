@@ -74,5 +74,6 @@ public class Employee {
     }
 
     public void setCompanyId(long companyId) {
+        this.company_id = companyId;
     }
 }

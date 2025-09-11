@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class CompanyService {
@@ -17,8 +16,8 @@ public class CompanyService {
         this.companyRespository.clearComanies();
     }
 
-    public void createCompany(Company company) {
-        companyRespository.save(company);
+    public Company createCompany(Company company) {
+        return companyRespository.save(company);
     }
 
     public List<Company> getCompanies(Integer page, Integer size) {
@@ -32,7 +31,7 @@ public class CompanyService {
         return companyRespository.getCompanyById(id);
     }
 
-    public Company updateEmployee(long id, String updateName) {
+    public Company updateEmployee(long id, Company updateName) {
 
         Company updateCompany = companyRespository.updateCompany(id, updateName);
         return updateCompany;

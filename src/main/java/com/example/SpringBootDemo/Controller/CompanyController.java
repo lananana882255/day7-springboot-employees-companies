@@ -22,8 +22,8 @@ public class CompanyController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createCompany(@RequestBody Company company) {
-        companyService.createCompany(company);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", company.getId()));
+        Company savedCompany= companyService.createCompany(company);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", savedCompany.getId()));
     }
 
     @GetMapping("/{id}")
@@ -46,7 +46,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}/name")
-    public ResponseEntity<Company> updateCompanyName(@PathVariable long id, @RequestBody String updateName) {
+    public ResponseEntity<Company> updateCompanyName(@PathVariable long id, @RequestBody Company updateName) {
         Company updateCompany = companyService.updateEmployee(id, updateName);
         if (updateCompany == null) {
             return ResponseEntity.notFound().build();

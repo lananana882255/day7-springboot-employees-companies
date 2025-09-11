@@ -1,12 +1,10 @@
 package com.example.SpringBootDemo.Repository;
 
 import com.example.SpringBootDemo.Company;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 
 public class CompanyRespositoryInMenmoryImp implements CompanyRespository {
@@ -20,9 +18,10 @@ public class CompanyRespositoryInMenmoryImp implements CompanyRespository {
     }
 
     @Override
-    public void save(Company company) {
+    public Company save(Company company) {
         company.setId(nextId++);
         companyList.add(company);
+        return company;
     }
 
     @Override
@@ -52,13 +51,13 @@ public class CompanyRespositoryInMenmoryImp implements CompanyRespository {
     }
 
     @Override
-    public Company updateCompany(long id, String updateName) {
+    public Company updateCompany(long id, Company updateName) {
         Company updateCompany = companyList.stream().filter(company -> company.getId() == id).findFirst().orElse(null);
         if (updateCompany == null) {
             return null;
         }
         if (updateName!=null) {
-            updateCompany.setName(updateName);
+            updateCompany.setName(updateName.getName());
         }
         return updateCompany;
     }

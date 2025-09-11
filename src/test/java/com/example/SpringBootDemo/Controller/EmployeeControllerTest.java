@@ -41,7 +41,8 @@ public class EmployeeControllerTest {
     private long createCompany(String name) {
         Company company = new Company();
         company.setName(name);
-        return company.getId();
+        Company savedCompany=companyRespository.save(company);
+        return savedCompany.getId();
     }
 
     private long createEmployee(String requestBody) throws Exception {
@@ -51,7 +52,6 @@ public class EmployeeControllerTest {
         return new ObjectMapper().readTree(response).get("id").asLong();
     }
 
-    //TODO
     @Test
     public void should_not_create_employee_when_post_given_an_existed_employee() throws Exception {
         long companyId = createCompany("Test Company");
@@ -209,7 +209,7 @@ public class EmployeeControllerTest {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
                     "companyId": %d
                 }
                 """,companyId) ;
@@ -218,7 +218,7 @@ public class EmployeeControllerTest {
                     "name": "Tony",
                     "age": 21,
                     "gender": "Male",
-                    "salary": 18000.00
+                    "salary": 18000.00,
                     "companyId": %d
                 }
                 """,companyId) ;
@@ -231,22 +231,25 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_employee_when_put_given_an_employee_age_and_salry() throws Exception {
-        String employeeJson = """
+        long companyId = createCompany("Test Company");
+        String employeeJson =String.format("""
                 {
                     "name": "Tom",
                     "age": 21,
                     "gender": "Male",
                     "salary": 18000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId);
 
         long employeeId = createEmployee(employeeJson);
-        String updateJson = """
+        String updateJson = String.format("""
                 {
                     "age": 25,
-                    "salary": 20000.00
+                    "salary": 20000.00,
+                    "companyId": %d
                 }
-                """;
+                """,companyId);
         mockMvc.perform(put("/employees/" + employeeId).contentType(APPLICATION_JSON).content(updateJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(25))
@@ -338,7 +341,7 @@ public class EmployeeControllerTest {
                     "name": "Tina",
                     "age": 21,
                     "gender": "Female",
-                    "salary": 18000.00
+                    "salary": 18000.00,
                     "companyId": %d
                 }
                 """,companyId) ;
@@ -387,10 +390,10 @@ public class EmployeeControllerTest {
         mockMvc.perform(get("/employees?page=1&size=5"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(5))
-                .andExpect(jsonPath("$[0].name").value("Tom1"))
-                .andExpect(jsonPath("$[1].name").value("Tom2"))
-                .andExpect(jsonPath("$[2].name").value("Tom3"))
-                .andExpect(jsonPath("$[3].name").value("Tom4"))
-                .andExpect(jsonPath("$[4].name").value("Tom5"));
+                .andExpect(jsonPath("$[0].name").value("Tom"))
+                .andExpect(jsonPath("$[1].name").value("Tina"))
+                .andExpect(jsonPath("$[2].name").value("Tony"))
+                .andExpect(jsonPath("$[3].name").value("Joe"))
+                .andExpect(jsonPath("$[4].name").value("Fred"));
     }
 }
