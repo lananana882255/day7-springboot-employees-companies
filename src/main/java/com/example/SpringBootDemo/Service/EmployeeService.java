@@ -33,7 +33,7 @@ public class EmployeeService {
         Employee targetEmployee= employeeRepository.getEmployees(null,null,null)
                 .stream().filter(employee1 -> employee1.getAge() == employee.getAge() &&
                         employee1.getName().equals(employee.getName()) &&
-                        employee1.getGender().equals(employee.getGender()) &&
+                        (employee1.getGender() == null ? employee.getGender() == null : employee1.getGender().equals(employee.getGender()))  &&
                         employee1.getCompany_id() == employee.getCompany_id() &&
                         employee1.getSalary() == employee.getSalary()).findFirst().orElse(null);
         if(targetEmployee == null) {
