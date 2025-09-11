@@ -5,12 +5,14 @@ import com.example.SpringBootDemo.Repository.CompanyRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CompanyService {
     @Autowired
     private CompanyRespository companyRespository;
+
     public void clearComanies() {
         this.companyRespository.clearComanies();
     }
@@ -19,9 +21,9 @@ public class CompanyService {
         companyRespository.save(company);
     }
 
-    public List<Company> getCompanies(Integer page,Integer size) {
+    public List<Company> getCompanies(Integer page, Integer size) {
 
-        List<Company> filteredCompanyList=companyRespository.getCompanies(page,size);
+        List<Company> filteredCompanyList = companyRespository.getCompanies(page, size);
 
         return filteredCompanyList;
     }
@@ -32,7 +34,7 @@ public class CompanyService {
 
     public Company updateEmployee(long id, Map<String, Object> updateName) {
 
-        Company updateCompany=companyRespository.updateCompany(id,updateName);
+        Company updateCompany = companyRespository.updateCompany(id, updateName);
         return updateCompany;
     }
 

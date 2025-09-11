@@ -15,19 +15,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmployeeNotCreatedWithInvalidArgumentsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleEmployeeNotCreatedWithInvalidArgumentsException(Exception e){
+    public String handleEmployeeNotCreatedWithInvalidArgumentsException(Exception e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(EmployeeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleEmployeeNotFoundException(Exception e){
+    public String handleEmployeeNotFoundException(Exception e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(EmployeeAlreadyDeletedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleEmployeeAlreadyDeletedException(Exception e){
+    public String handleEmployeeAlreadyDeletedException(Exception e) {
         return e.getMessage();
     }
 

@@ -1,12 +1,25 @@
 package com.example.SpringBootDemo;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+
+
+@Entity
+@Table(name="employees")
 public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private int age;
     private String gender;
     private double salary;
     private boolean status;
+
+    @Column(name="company_id")
+    private long company_id;
+
+
     public long getId() {
         return id;
     }
@@ -52,6 +65,10 @@ public class Employee {
     }
 
     public void setStatus(boolean status) {
-        this.status=status;
+        this.status = status;
+    }
+
+    public long getCompany_id() {
+        return company_id;
     }
 }

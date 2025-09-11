@@ -1,12 +1,16 @@
 package com.example.SpringBootDemo.Controller;
 
 
+import com.example.SpringBootDemo.Employee;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -20,14 +24,40 @@ public class EmployeeControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private EmployeesController employeesController;
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
         employeesController.clearEmployees();
     }
 
+    private long createEmployee(String requestBody) throws Exception {
+        ResultActions resultActions = mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(requestBody));
+        MvcResult mvcResult = resultActions.andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        return new ObjectMapper().readTree(response).get("id").asLong();
+    }
+
+    //TODO
+    @Test
+    public void should_not_create_employee_when_post_given_an_existed_employee() throws Exception {
+        String employeeJson = """
+                {
+                    "name": "Tom",
+                    "age": 21,
+                    "gender": "Male",
+                    "salary": 18000.00
+                }
+                """;
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
+                        .content(employeeJson))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
+                        .content(employeeJson))
+                .andExpect(status().isBadRequest());
+    }
 
     @Test
-    public void should_not_create_employee_when_post_given_a_an_employee_with_age_over_30_and_salary_below_20000() throws Exception {
+    public void should_not_create_employee_when_post_given_an_employee_with_age_over_30_and_salary_below_20000() throws Exception {
         String employeeJson = """
                 {
                     "name": "Tom",
@@ -51,10 +81,11 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
+        long employeeId = createEmployee(employeeJson);
         mockMvc.perform(post("/employees").contentType(APPLICATION_JSON)
                         .content(employeeJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(employeeId + 1));
     }
 
     @Test
@@ -67,8 +98,8 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        mockMvc.perform(get("/employees/2"))
+        long employeeId = createEmployee(employeeJson);
+        mockMvc.perform(get("/employees/" + employeeId))
                 .andExpect(status().isNotFound());
     }
 
@@ -82,10 +113,10 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        mockMvc.perform(get("/employees/1"))
+        long employeeId = createEmployee(employeeJson);
+        mockMvc.perform(get("/employees/" + employeeId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(employeeId))
                 .andExpect(jsonPath("$.name").value("Tom"))
                 .andExpect(jsonPath("$.age").value(21))
                 .andExpect(jsonPath("$.gender").value("Male"))
@@ -166,14 +197,14 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
+        long employeeId = createEmployee(employeeJson);
         String updateJson = """
                 {
                     "age": 25,
                     "salary": 20000.00
                 }
                 """;
-        mockMvc.perform(put("/employees/1").contentType(APPLICATION_JSON).content(updateJson))
+        mockMvc.perform(put("/employees/" + employeeId).contentType(APPLICATION_JSON).content(updateJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(25))
                 .andExpect(jsonPath("$.salary").value(20000.00));
@@ -181,46 +212,19 @@ public class EmployeeControllerTest {
 
     @Test
     public void should_return_404_when_put_given_an_invalid_employee_id_and_updateImformation() throws Exception {
-        String employeeJson = """
+        String updateJson = """
                 {
-                    "name": "Tom",
+                    "name": "Tony",
                     "age": 21,
                     "gender": "Male",
                     "salary": 18000.00
                 }
                 """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        String updateJson = """
-                {
-                    "age": 25,
-                    "salary": 20000.00
-                }
-                """;
-        mockMvc.perform(put("/employees/2").contentType(APPLICATION_JSON).content(updateJson))
+
+        mockMvc.perform(put("/employees/9999" ).contentType(APPLICATION_JSON).content(updateJson))
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void should_return_400_when_put_given_an_invalid_employee_id_and_updateImformation() throws Exception {
-        String employeeJson = """
-                {
-                    "name": "Tom",
-                    "age": 21,
-                    "gender": "Male",
-                    "salary": 18000.00
-                }
-                """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        mockMvc.perform(delete("/employees/1").contentType(APPLICATION_JSON));
-        String updateJson = """
-                {
-                    "age": 25,
-                    "salary": 20000.00
-                }
-                """;
-        mockMvc.perform(put("/employees/1").contentType(APPLICATION_JSON).content(updateJson))
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     public void should_return_404_when_delete_given_an_invalid_employee_id() throws Exception {
@@ -232,8 +236,8 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        mockMvc.perform(delete("/employees/2")).andExpect(status().isNotFound());
+        long employeeId = createEmployee(employeeJson);
+        mockMvc.perform(delete("/employees/" + employeeId + 1)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -246,9 +250,9 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        mockMvc.perform(delete("/employees/1")).andExpect(status().isNoContent());
-        }
+        long employeeId = createEmployee(employeeJson);
+        mockMvc.perform(delete("/employees/" + employeeId)).andExpect(status().isNoContent());
+    }
 
 
     @Test
@@ -261,9 +265,9 @@ public class EmployeeControllerTest {
                     "salary": 18000.00
                 }
                 """;
-        mockMvc.perform(post("/employees").contentType(APPLICATION_JSON).content(employeeJson));
-        mockMvc.perform(delete("/employees/1")).andExpect(status().isNoContent());
-        mockMvc.perform(delete("/employees/1")).andExpect(status().isBadRequest());
+        long employeeId = createEmployee(employeeJson);
+        mockMvc.perform(delete("/employees/" + employeeId)).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/employees/" + employeeId)).andExpect(status().isBadRequest());
     }
 
     @Test

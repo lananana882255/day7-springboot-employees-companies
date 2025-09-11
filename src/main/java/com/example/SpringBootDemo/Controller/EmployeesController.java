@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/employees")
 @RestController
@@ -18,6 +19,7 @@ public class EmployeesController {
 
     @Autowired
     private EmployeeService employeeService;
+
     public void clearEmployees() {
         this.employeeService.clearEmployees();
     }
@@ -30,25 +32,21 @@ public class EmployeesController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployee(@PathVariable long id) throws EmployeeNotFoundException {
-            return ResponseEntity.ok(employeeService.getEmployeeById(id));
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
     @GetMapping
     public List<Employee> getEmployees(
             @RequestParam(required = false) String gender,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size){
-        return employeeService.getEmployees(gender,page,size);
+            @RequestParam(required = false) Integer size) {
+        return employeeService.getEmployees(gender, page, size);
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployeeAgeAndSalary(@PathVariable  long id,@RequestBody Map<String,Object> updateInformation) throws EmployeeAlreadyDeletedException, EmployeeNotFoundException {
-        Employee updateEmployee=employeeService.updateEmployee(id,updateInformation);
-        if(updateEmployee==null){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updateEmployee);
+    public ResponseEntity<Employee> updateEmployeeAgeAndSalary(@PathVariable long id, @RequestBody Employee updateInformation) throws EmployeeAlreadyDeletedException, EmployeeNotFoundException {
+        return ResponseEntity.ok(employeeService.updateEmployee(id, updateInformation));
     }
 
     @DeleteMapping("/{id}")

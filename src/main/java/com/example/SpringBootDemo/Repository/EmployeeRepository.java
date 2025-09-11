@@ -4,73 +4,20 @@ import com.example.SpringBootDemo.Employee;
 import com.example.SpringBootDemo.Service.EmployeeAlreadyDeletedException;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 @Repository
-public class EmployeeRepository {
-    private List<Employee> employeeList= new ArrayList<>();
-    public void save(Employee employee) {
-        employeeList.add(employee);
-    }
+public interface EmployeeRepository  {
+    Map<String, Long> save(Employee employee);
 
-    public void clearEmployees() {
-        this.employeeList.clear();
-    }
+    void clearEmployees();
 
-    public List<Employee> getEmployees(String gender, Integer page,Integer size) {
-        List<Employee> filteredEmployeesList=employeeList;
-        if(gender!=null){
-            filteredEmployeesList=filteredEmployeesList.stream().filter(employee -> employee.getGender().equalsIgnoreCase(gender)).collect(Collectors.toList());
-        }
-        if(page!=null&&size!=null){
-            int start = (page - 1) * size;
-            if (start >= filteredEmployeesList.size()) {
-                return Collections.emptyList();
-            }
-            int end = Math.min(start + size, filteredEmployeesList.size());
-            filteredEmployeesList=filteredEmployeesList.subList(start,end);
-        }
-        return filteredEmployeesList;
-    }
+    List<Employee> getEmployees(String gender, Integer page, Integer size);
 
-    public boolean delete(long id) throws EmployeeAlreadyDeletedException {
-        Employee removeEmployee= getEmployeeById(id);
-        if(removeEmployee==null){
-            return false;
-        }
-        if(removeEmployee.getStatus()){
-            removeEmployee.setStatus(false);
-            return true;
-        }
-        else{
-            throw new EmployeeAlreadyDeletedException("Employee already deleted.");
-        }
-    }
+    void delete(long id) throws EmployeeAlreadyDeletedException;
 
-    public Employee getEmployeeById(long id) {
-        return employeeList.stream()
-                .filter(employee -> employee.getId()==id)
-                .findFirst().orElse(null);
-    }
+    Employee getEmployeeById(long id);
 
-    public Employee updateEmployee(long id ,Map<String, Object>updateInformation) {
-        Employee updateEmployee=getEmployeeById(id);
-        if(updateEmployee==null){
-            return null;
-        }
-        if (updateInformation.containsKey("age")) {
-            updateEmployee.setAge((Integer) updateInformation.get("age"));
-        }
-        if (updateInformation.containsKey("name")) {
-            updateEmployee.setName(updateInformation.get("name").toString());
-        }
-        if (updateInformation.containsKey("gender")) {
-            updateEmployee.setGender(updateInformation.get("gender").toString());
-        }
-        if (updateInformation.containsKey("salary")) {
-            updateEmployee.setSalary(Double.parseDouble(updateInformation.get("salary").toString()));
-        }
-        return updateEmployee;
-    }
+    Employee updateEmployee(long id, Employee updateEmployee);
 }
