@@ -31,7 +31,7 @@ public class EmployeeRepositoryDBImp implements EmployeeRepository {
     @Override
     public List<Employee> getEmployees(String gender, Integer page, Integer size) {
         if (gender != null) {
-            return employeeJPARepository.findByGender(gender);
+            return employeeJPARepository.findByGenderOrderByAgeDesc(gender);
         }
 
         if (page != null && size != null) {

@@ -159,12 +159,12 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void should_return_male_employees_when_get_given_male_gender() throws Exception {
+    public void should_return_male_employees_order_by_age_desc_when_get_given_male_gender() throws Exception {
         long companyId = createCompany("Test Company");
         String employeeJsonA =String.format("""
                 {
                     "name": "Tom",
-                    "age": 21,
+                    "age": 25,
                     "gender": "Male",
                     "salary": 18000.00,
                     "companyId": %d
@@ -182,7 +182,7 @@ public class EmployeeControllerTest {
         String employeeJsonC = String.format("""
                 {
                     "name": "Tony",
-                    "age": 21,
+                    "age": 29,
                     "gender": "Male",
                     "salary": 18000.00,
                     "companyId": %d
@@ -195,9 +195,9 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].gender").value("Male"))
-                .andExpect(jsonPath("$[0].name").value("Tom"))
+                .andExpect(jsonPath("$[0].name").value("Tony"))
                 .andExpect(jsonPath("$[1].gender").value("Male"))
-                .andExpect(jsonPath("$[1].name").value("Tony"));
+                .andExpect(jsonPath("$[1].name").value("Tom"));
 
     }
 
